@@ -65,6 +65,23 @@ class BooksApp extends React.Component {
     showSearchPage: false
   }
 
+  moveBookToShelf = (shelfIndex, bookIndex, targetShelf) => {
+      let shelves = this.state.shelves;
+      const shelfIndexMap = {
+          currentlyReading : 0,
+          wantToRead : 1,
+          read : 2
+      }
+      const targetShelfIndex = shelfIndexMap[targetShelf];
+
+      const book = this.state.shelves[shelfIndex].books[bookIndex];
+      shelves[shelfIndex].books.splice(bookIndex, 1);
+      shelves[targetShelfIndex].books.push(book);
+
+      this.setState({shelves : shelves});
+
+  }
+
   render() {
     return (
       <div className="app">
@@ -96,8 +113,8 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                {this.state.shelves.map((shelf) => (
-                    <BookShelf books={shelf.books} shelfName={shelf.shelfName}/>
+                {this.state.shelves.map((shelf, index) => (
+                    <BookShelf key={index} onMove={this.moveBookToShelf} shelfIndex={index} books={shelf.books} shelfName={shelf.shelfName}/>
                 ))}
               </div>
             </div>
