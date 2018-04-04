@@ -1,135 +1,78 @@
 import React from 'react'
-// import * as BooksAPI from './BooksAPI'
+import * as BooksAPI from './BooksAPI'
 import './App.css'
 import BookShelf from "./Components/BookShelf";
-import { Link, Route } from 'react-router-dom';
+import BookSearch from "./Components/BookSearch";
+import {Link, Route} from 'react-router-dom';
 
 class BooksApp extends React.Component {
-  state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    shelves : [
-        {
-          shelfName : 'Currently Reading',
-          books : [
-              {
-                bookTitle : 'To Kill a Mockingbir',
-                bookAuthors : 'Harper Lee',
-                bookImageUrl : 'http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api'
-              },
-              {
-                bookTitle : 'Ender\'s Game',
-                bookAuthors : 'Orson Scott Card',
-                bookImageUrl : 'http://books.google.com/books/content?id=yDtCuFHXbAYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72RRiTR6U5OUg3IY_LpHTL2NztVWAuZYNFE8dUuC0VlYabeyegLzpAnDPeWxE6RHi0C2ehrR9Gv20LH2dtjpbcUcs8YnH5VCCAH0Y2ICaKOTvrZTCObQbsfp4UbDqQyGISCZfGN&source=gbs_api' }
-          ]
-        },
-        {
-          shelfName : 'Want to Read',
-          books : [
-              {
-                bookTitle : '1776',
-                bookAuthors : 'David McCullough',
-                bookImageUrl : 'http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api'
-              },
-              {
-                bookTitle : 'Harry Potter and the Sorcerer\'s Stone',
-                bookAuthors : 'J.K. Rowling',
-                bookImageUrl : 'http://books.google.com/books/content?id=wrOQLV6xB-wC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72G3gA5A-Ka8XjOZGDFLAoUeMQBqZ9y-LCspZ2dzJTugcOcJ4C7FP0tDA8s1h9f480ISXuvYhA_ZpdvRArUL-mZyD4WW7CHyEqHYq9D3kGnrZCNiqxSRhry8TiFDCMWP61ujflB&source=gbs_api'
-              }
-          ]
-        },
-        {
-          shelfName : 'Read',
-          books : [
-              {
-                bookTitle : 'The Hobbit',
-                bookAuthors : 'J.R.R. Tolkien',
-                bookImageUrl : 'http://books.google.com/books/content?id=pD6arNyKyi8C&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70Rw0CCwNZh0SsYpQTkMbvz23npqWeUoJvVbi_gXla2m2ie_ReMWPl0xoU8Quy9fk0Zhb3szmwe8cTe4k7DAbfQ45FEzr9T7Lk0XhVpEPBvwUAztOBJ6Y0QPZylo4VbB7K5iRSk&source=gbs_api'
-              },
-              {
-                bookTitle : 'Oh, the Places You\'ll Go!',
-                bookAuthors : 'Seuss',
-                bookImageUrl : 'http://books.google.com/books/content?id=1q_xAwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE712CA0cBYP8VKbEcIVEuFJRdX1k30rjLM29Y-dw_qU1urEZ2cQ42La3Jkw6KmzMmXIoLTr50SWTpw6VOGq1leINsnTdLc_S5a5sn9Hao2t5YT7Ax1RqtQDiPNHIyXP46Rrw3aL8&source=gbs_api'
-              },
-              {
-                bookTitle : 'The Adventures of Tom Sawyer',
-                bookAuthors : 'Mark Twain',
-                bookImageUrl : 'http://books.google.com/books/content?id=32haAAAAMAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72yckZ5f5bDFVIf7BGPbjA0KYYtlQ__nWB-hI_YZmZ-fScYwFy4O_fWOcPwf-pgv3pPQNJP_sT5J_xOUciD8WaKmevh1rUR-1jk7g1aCD_KeJaOpjVu0cm_11BBIUXdxbFkVMdi&source=gbs_api'
-              }
-          ]
-        },
-    ]
-  }
 
-  moveBookToShelf = (shelfIndex, bookIndex, targetShelf) => {
-      let shelves = this.state.shelves;
-      const shelfIndexMap = {
-          currentlyReading : 0,
-          wantToRead : 1,
-          read : 2
-      }
-      const targetShelfIndex = shelfIndexMap[targetShelf];
+    state = {
+        shelves: [
+            {
+                shelfName: 'Currently Reading',
+                shelfFieldName : 'currentlyReading',
+                books: []
+            },
+            {
+                shelfName: 'Want to Read',
+                shelfFieldName : 'wantToRead',
+                books: []
+            },
+            {
+                shelfName: 'Read',
+                shelfFieldName : 'read',
+                books: []
+            },
+        ]
+    };
 
-      const book = this.state.shelves[shelfIndex].books[bookIndex];
-      shelves[shelfIndex].books.splice(bookIndex, 1);
-      shelves[targetShelfIndex].books.push(book);
+    componentDidMount() {
+        this.fetchBooks();
+    }
 
-      this.setState({shelves : shelves});
+    fetchBooks = () => {
+        BooksAPI.getAll().then((books) => {
+            let shelves = this.state.shelves.slice();
+            shelves.forEach((shelf) => {
+                shelf.books = books.filter((b) => b.shelf === shelf.shelfFieldName)
+            });
+            this.setState(shelves);
+        })
+    };
 
-  }
+    render() {
 
-  render() {
-    return (
-      <div className="app">
+        return (
+            <div className="app">
 
-          <Route path="/search" render={() => (
-              <div className="search-books">
-                  <div className="search-books-bar">
-                      <a className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</a>
-                      <div className="search-books-input-wrapper">
-                          {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
+                {/*search page*/}
+                <Route path="/search" render={() => (
+                    <BookSearch fetchBooks={this.fetchBooks}/>
+                )}/>
 
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-                          <input type="text" placeholder="Search by title or author"/>
+                {/*home page*/}
+                <Route exact path="/" render={() => (
+                    <div className="list-books">
+                        <div className="list-books-title">
+                            <h1>MyReads</h1>
+                        </div>
+                        <div className="list-books-content">
+                            <div>
+                                {this.state.shelves.map((shelf, index) => (
+                                    <BookShelf key={index} shelfName={shelf.shelfName} books={shelf.books} fetchBooks={this.fetchBooks}/>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="open-search">
+                            <Link to="/search">Add a book</Link>
+                        </div>
+                    </div>
+                )}/>
 
-                      </div>
-                  </div>
-                  <div className="search-books-results">
-                      <ol className="books-grid"></ol>
-                  </div>
-              </div>
-          )}/>
-
-          <Route exact path="/" render={() => (
-              <div className="list-books">
-                  <div className="list-books-title">
-                      <h1>MyReads</h1>
-                  </div>
-                  <div className="list-books-content">
-                      <div>
-                          {this.state.shelves.map((shelf, index) => (
-                              <BookShelf key={index} onMove={this.moveBookToShelf} shelfIndex={index} books={shelf.books} shelfName={shelf.shelfName}/>
-                          ))}
-                      </div>
-                  </div>
-                  <div className="open-search">
-                      <Link to="/search">Add a book</Link>
-                  </div>
-              </div>
-          )}/>
-
-      </div>
-    )
-  }
+            </div>
+        )
+    }
 }
 
 export default BooksApp
