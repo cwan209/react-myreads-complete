@@ -5,40 +5,79 @@ import BookShelf from "./BookShelf";
 
 class BookSearch extends Component {
     state = {
-        books : []
-    }
+        keyword : '',
+        books : [],
+        error: ''
+    };
 
-    searchBooks = (event) => {
-        const keyword = event.target.value;
-        BooksAPI.search(keyword).then((books) => {
-            if (books.error) {
-                this.setState({books : []});
-            }
-            this.setState({books : books});
-        });
+    handleChange = (event) => {
+        this.setState({keyword : event.target.value});
+        this.searchBooks(event.target.value);
 
-        // Clear page when nothing's in the bar
-        if (keyword === '') {
-            this.setState({books : []});
+        if (event.target.value === '') {
+            this.setState({error: ''});
         }
+    };
+
+    searchBooks = (keyword) => {
+
+        BooksAPI.search(keyword).then((books) => {
+
+            //check keyword match
+            if (keyword !== this.state.keyword) {
+                this.setState({error:'The result and keyword do not match, please try typing more slowly'});
+                console.log('no');
+            } else {
+                this.setState({error:''});
+                console.log('yes');
+            }
+
+            if (!books.error) {
+                books = this.setBookShelf(books);
+                this.setState({books: books});
+            } else {
+                this.setState({error: books.error});
+            }
+        });
+    };
+
+    setBookShelf = (books) => {
+        const oldBooks = this.props.books;
+        books.forEach((b) => {
+            oldBooks.forEach((ob) => {
+                if (ob.id === b.id) {
+                    b.shelf = ob.shelf;
+                }
+            })
+        });
+        return books;
     }
 
     render() {
         return (
+
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link to={"/"} className="close-search">Close</Link>
                     <div className="search-books-input-wrapper">
-                        <input type="text" onChange={this.searchBooks} placeholder="Search by title or author"/>
+                        <input type="text" onChange={this.handleChange} value={this.state.keyword} placeholder="Search by title or author"/>
                     </div>
                 </div>
 
                 <div className="search-books-results">
-                    {this.state.books.length > 0 ? (
+
+                    {/*search not matching keyword*/}
+                    {this.state.error !== '' &&
+                    <p>{this.state.error}</p>
+                    }
+
+                    {/*search result*/}
+                    {this.state.keyword.trim() !== '' ? (
                     <BookShelf fetchBooks={this.props.fetchBooks} shelfName={'Search Result'} books={this.state.books}/>
                     ) : (
                     <p>No Result Found</p>
                     )}
+
                 </div>
 
             </div>

@@ -8,23 +8,7 @@ import {Link, Route} from 'react-router-dom';
 class BooksApp extends React.Component {
 
     state = {
-        shelves: [
-            {
-                shelfName: 'Currently Reading',
-                shelfFieldName : 'currentlyReading',
-                books: []
-            },
-            {
-                shelfName: 'Want to Read',
-                shelfFieldName : 'wantToRead',
-                books: []
-            },
-            {
-                shelfName: 'Read',
-                shelfFieldName : 'read',
-                books: []
-            },
-        ]
+        books : []
     };
 
     componentDidMount() {
@@ -33,22 +17,36 @@ class BooksApp extends React.Component {
 
     fetchBooks = () => {
         BooksAPI.getAll().then((books) => {
-            let shelves = this.state.shelves.slice();
-            shelves.forEach((shelf) => {
-                shelf.books = books.filter((b) => b.shelf === shelf.shelfFieldName)
-            });
-            this.setState(shelves);
+            this.setState({books : books});
         })
     };
 
+    getBooksForShelf = (shelf) => {
+        return this.state.books.filter((b) => b.shelf === shelf.shelfFieldName);
+    }
+
     render() {
+        const shelves = [
+            {
+                shelfName: 'Currently Reading',
+                shelfFieldName : 'currentlyReading',
+            },
+            {
+                shelfName: 'Want to Read',
+                shelfFieldName : 'wantToRead',
+            },
+            {
+                shelfName: 'Read',
+                shelfFieldName : 'read',
+            },
+        ];
 
         return (
             <div className="app">
 
                 {/*search page*/}
                 <Route path="/search" render={() => (
-                    <BookSearch fetchBooks={this.fetchBooks}/>
+                    <BookSearch books={this.state.books} fetchBooks={this.fetchBooks}/>
                 )}/>
 
                 {/*home page*/}
@@ -59,8 +57,8 @@ class BooksApp extends React.Component {
                         </div>
                         <div className="list-books-content">
                             <div>
-                                {this.state.shelves.map((shelf, index) => (
-                                    <BookShelf key={index} shelfName={shelf.shelfName} books={shelf.books} fetchBooks={this.fetchBooks}/>
+                                {shelves.map((shelf, index) => (
+                                    <BookShelf key={index} shelfName={shelf.shelfName} books={this.getBooksForShelf(shelf)} fetchBooks={this.fetchBooks}/>
                                 ))}
                             </div>
                         </div>
